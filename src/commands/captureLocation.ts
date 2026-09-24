@@ -42,7 +42,8 @@ export async function captureLocationFromGeoLink(plugin: OMapsFetcherPlugin): Pr
 			geo.lat,
 			geo.lon,
 			plugin.settings.radiusMeters,
-			plugin.settings.searchAllFeatures
+			plugin.settings.searchAllFeatures,
+			`${plugin.manifest.id}/${plugin.manifest.version} (Obsidian plugin; +${plugin.manifest.authorUrl ?? "https://github.com/MorayM/osm-fetcher"})`
 		);
 	} catch (e) {
 		new Notice("Overpass request failed: " + (e instanceof Error ? e.message : String(e)));

@@ -22,7 +22,8 @@ export async function queryOverpass(
 	lat: number,
 	lon: number,
 	radiusMeters: number,
-	searchAllFeatures: boolean
+	searchAllFeatures: boolean,
+	userAgent: string
 ): Promise<OverpassElement[]> {
 	const query = searchAllFeatures
 		? buildUnfilteredQuery(lat, lon, radiusMeters)
@@ -31,7 +32,11 @@ export async function queryOverpass(
 	const res = await requestUrl({
 		url: endpoint,
 		method: "POST",
-		headers: { "Content-Type": "application/x-www-form-urlencoded" },
+		headers: {
+			"Content-Type": "application/x-www-form-urlencoded",
+			// Overpass rejects requests with a missing/generic User-Agent (406 Not Acceptable).
+			"User-Agent": userAgent,
+		},
 		body: "data=" + encodeURIComponent(query),
 		throw: false,
 	});
