@@ -30,7 +30,7 @@ export async function captureLocationFromGeoLink(plugin: OMapsFetcherPlugin): Pr
 		geoLinkKey: plugin.settings.geoLinkProperty,
 	});
 	if (plugin.settings.deleteGeoLinkFromBodyAfterCapture && geoInBody) {
-		newContent = removeGeoLinkFromBody(newContent, geo.rawLink);
+		newContent = removeGeoLinkFromBody(newContent, geo.matchedText);
 	}
 	await plugin.app.vault.modify(view.file, newContent);
 
