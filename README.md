@@ -88,6 +88,8 @@ Under **Settings → Community plugins → OSM Fetcher** you can configure:
 
 - **Search radius (m)**: Distance in meters for the Overpass `around` query.
 - **Overpass API endpoint**: URL of the Overpass interpreter. Leave the default unless you use your own instance.
+- **Overpass retry attempts**: Number of times to attempt the Overpass API request (including the first try) before giving up on a 504 response (default: `3`).
+- **Overpass retry backoff (s)**: Seconds to wait between retry attempts after a 504 response (default: `5`).
 - **Geo link frontmatter key**: Frontmatter property name that stores the `geo:` link (default: `geo`).
 - **Search everything**:
   - Off: only returns elements with common tags like `name`, `amenity`, `shop`, `tourism`.

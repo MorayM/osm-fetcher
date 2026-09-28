@@ -43,7 +43,16 @@ export async function captureLocationFromGeoLink(plugin: OMapsFetcherPlugin): Pr
 			geo.lon,
 			plugin.settings.radiusMeters,
 			plugin.settings.searchAllFeatures,
-			`${plugin.manifest.id}/${plugin.manifest.version} (Obsidian plugin; +${plugin.manifest.authorUrl ?? "https://github.com/MorayM/osm-fetcher"})`
+			`${plugin.manifest.id}/${plugin.manifest.version} (Obsidian plugin; +${plugin.manifest.authorUrl ?? "https://github.com/MorayM/osm-fetcher"})`,
+			{
+				maxAttempts: plugin.settings.overpassRetryAttempts,
+				backoffSeconds: plugin.settings.overpassRetryBackoffSeconds,
+				onRetry: (attempt, maxAttempts, backoffSeconds) => {
+					new Notice(
+						`Overpass returned 504, retrying in ${backoffSeconds}s… (attempt ${attempt + 1}/${maxAttempts})`
+					);
+				},
+			}
 		);
 	} catch (e) {
 		new Notice("Overpass request failed: " + (e instanceof Error ? e.message : String(e)));

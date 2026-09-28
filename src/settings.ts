@@ -8,6 +8,8 @@ export interface OMapsFetcherSettings {
 	deleteGeoLinkFromBodyAfterCapture: boolean;
 	searchAllFeatures: boolean;
 	addressPartOrder: string[];
+	overpassRetryAttempts: number;
+	overpassRetryBackoffSeconds: number;
 }
 
 const DEFAULT_ADDRESS_PART_ORDER = [
@@ -23,6 +25,8 @@ export const DEFAULT_SETTINGS: OMapsFetcherSettings = {
 	deleteGeoLinkFromBodyAfterCapture: false,
 	searchAllFeatures: false,
 	addressPartOrder: [...DEFAULT_ADDRESS_PART_ORDER],
+	overpassRetryAttempts: 3,
+	overpassRetryBackoffSeconds: 5,
 };
 
 export class OMapsFetcherSettingTab extends PluginSettingTab {
@@ -62,6 +66,34 @@ export class OMapsFetcherSettingTab extends PluginSettingTab {
 					.setValue(this.plugin.settings.overpassEndpoint)
 					.onChange(async (value) => {
 						this.plugin.settings.overpassEndpoint = value?.trim() || DEFAULT_SETTINGS.overpassEndpoint;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		new Setting(containerEl)
+			.setName("Overpass retry attempts")
+			.setDesc("Number of times to attempt the Overpass API request, including the first try, before giving up on a 504 response.")
+			.addText((text) =>
+				text
+					.setPlaceholder("3")
+					.setValue(String(this.plugin.settings.overpassRetryAttempts))
+					.onChange(async (value) => {
+						const n = parseInt(value, 10);
+						this.plugin.settings.overpassRetryAttempts = Number.isNaN(n) ? 3 : Math.max(1, n);
+						await this.plugin.saveSettings();
+					})
+			);
+
+		new Setting(containerEl)
+			.setName("Overpass retry backoff (s)")
+			.setDesc("Seconds to wait between retry attempts after a 504 response from the Overpass API.")
+			.addText((text) =>
+				text
+					.setPlaceholder("5")
+					.setValue(String(this.plugin.settings.overpassRetryBackoffSeconds))
+					.onChange(async (value) => {
+						const n = parseInt(value, 10);
+						this.plugin.settings.overpassRetryBackoffSeconds = Number.isNaN(n) ? 5 : Math.max(0, n);
 						await this.plugin.saveSettings();
 					})
 			);
